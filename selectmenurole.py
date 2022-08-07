@@ -1,5 +1,5 @@
 import discord
-from discord.ui import Select, View
+from discord.ui import View
 from discord.ext import commands
 
 intents = discord.Intents.all()
@@ -13,119 +13,90 @@ async def on_ready():
 
     print("Кисан проснулся :)")
 
-class RolesView(View):
 
-    # Select Menu
+class GameRole(View):
 
-    @discord.ui.select(
-        placeholder="Выбрать игры",
-        min_values=1,
-        max_values=4,
-        options=[
-            discord.SelectOption(
-                label="Minecraft",
-                description="",
-                emoji=":mine:",
-                value="947910054097616936"
-            ),
-            discord.SelectOption(
-                label="Counter strike Global offensive",
-                description="",
-                emoji=":cs:",
-                value="947909872081596417"
-            ),
-            discord.SelectOption(
-                label="Genshin Impact",
-                description="",
-                emoji=":gi:",
-                value="947909653990350858"
-            ),
-            discord.SelectOption(
-                label="War thunder",
-                description="",
-                emoji=":warth:",
-                value="947910192924880946"
-            ),
-            discord.SelectOption(
-                label="PUBG mobile",
-                description="",
-                emoji=":pubg:",
-                value="947910332788142130"
-            )
-        ]
-    )
-    # Callback
+	def __init__(self):
+		super().__init__(timeout = None)
 
-    async def select_callback(self, select, interaction):
+	# Select Menu
 
-        await interaction.response.defer()
+	@discord.ui.select(
+		placeholder = "Выберите для получения роли",
+		min_values = 0,
+		max_values = 5,
+		options = [
+			discord.SelectOption(
+				label = "Minecraft",
+				description = "",
+				emoji = "<:minecraft:1005452339009835079>",
+				value = "947910054097616936"
+			),
+			discord.SelectOption(
+				label = "Counter strike Global offensive",
+				description="",
+				emoji = "<:cs:947572308971782264>",
+				value = "947909872081596417"
+			),
+			discord.SelectOption(
+				label = "Genshin Impact",
+				description = "",
+				emoji = "<:gi:947574602282963114>",
+				value = "947909653990350858"
+			),
+			discord.SelectOption(
+				label = "War Thunder",
+				description = "",
+				emoji = "<:warth:947583191617777676>",
+				value = "947910192924880946"
+			),
+			discord.SelectOption(
+				label="PUBG Mobile",
+				description="",
+				emoji="<:pubg:947916451623354398>",
+				value="947910332788142130"
+			)
+		]
+	)
 
-        # Getting Roles
+	# Callback
 
-        minecraft = discord.utils.get(interaction.user.guild.roles, name="Minecraft")
-        cs = discord.utils.get(interaction.user.guild.roles, name="Counter strike Global offensive")
-        gi = discord.utils.get(interaction.user.guild.roles, name="Genshin Impact")
-        wt = discord.utils.get(interaction.user.guild.roles, name="War thunder")
-        pm = discord.utils.get(interaction.user.guild.roles, name="PUBG mobile")
+	async def select_callback(self, select, interaction):
 
-        # Creating Lists
+		await interaction.response.defer()
 
-        roles_to_add = []
-        roles_to_remove = []
+		minecraft_role = discord.utils.get(interaction.user.guild.roles, name = "Minecraft")
+		csgo_role = discord.utils.get(interaction.user.guild.roles, name = "Cs Go")
+		genshinimpact_role = discord.utils.get(interaction.user.guild.roles, name = "Genshin Impact")
+		warthunder_role = discord.utils.get(interaction.user.guild.roles, name = "War thunder")
+		pubgmobile_role = discord.utils.get(interaction.user.guild.roles, name="PUBG Mobile")
 
-        # Checking If User Has Counter strike Global offensive Role
-        if str(minecraft.id) in select.values:
-            if interaction.user in minecraft.members:
-                roles_to_remove.append(minecraft)
-            else:
-                roles_to_add.append(minecraft)
+		list_roles = [csgo_role, genshinimpact_role, minecraft_role, warthunder_role, pubgmobile_role]
 
-        # Checking If User Has Minecraft Role
+		for role in interaction.user.roles:
+			for rolelist in list_roles:
+				if role == rolelist:
+					if role not in select.values:
+						await interaction.user.remove_roles(role)
 
-        if str(cs.id) in select.values:
-            if interaction.user in cs.members:
-                roles_to_remove.append(cs)
-            else:
-                roles_to_add.append(cs)
-
-        # Checking If User Has Genshin Impact Role
-
-        if str(gi.id) in select.values:
-            if interaction.user in gi.members:
-                roles_to_remove.append(gi)
-            else:
-                roles_to_add.append(gi)
-
-        # Checking If User Has War thunder Role
-
-        if str(wt.id) in select.values:
-            if interaction.user in wt.members:
-                roles_to_remove.append(wt)
-            else:
-                roles_to_add.append(wt)
-
-        # Checking If User Has PUBG mobile Role
-
-        if str(pm.id) in select.values:
-            if interaction.user in pm.members:
-                roles_to_remove.append(pm)
-            else:
-                roles_to_add.append(pm)
-
-        # Adding Roles To User
-
-        for role in roles_to_add:
-            await interaction.user.add_roles(role)
-
-        # Removing Roles From User
-
-        for role in roles_to_remove:
-            await interaction.user.remove_roles(role)
+		if len(select.values) != 0:
+			for choice in select.values:
+				if choice == "947910054097616936":
+					await interaction.user.add_roles(minecraft_role)
+				elif choice == "947909872081596417":
+					await interaction.user.add_roles(csgo_role)
+				elif choice == "947909653990350858":
+					await interaction.user.add_roles(genshinimpact_role)
+				elif choice == "947910192924880946":
+					await interaction.user.add_roles(warthunder_role)
+				elif choice == "947910332788142130":
+					await interaction.user.add_roles(pubgmobile_role)
 
 @client.command()
-async def stata(ctx):
+async def gamerole(ctx):
 
-    view = RolesView()
-    await ctx.send("**В какие игры вы играете?**", view=view)
+    view = GameRole()
+    await ctx.send("**В какие игры вы играете?** <:vibepepe:955574694193561740>", view=view)
+
     
 client.run('token')
